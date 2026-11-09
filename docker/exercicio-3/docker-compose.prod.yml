@@ -1,0 +1,41 @@
+name: orion-exercicio-3-prod
+
+services:
+  api:
+    build:
+      context: .
+      target: prod
+    ports:
+      - "${PROD_PORT:-8002}:8000"
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER:?Defina DB_USER no .env}
+      DB_PASS: ${DB_PASS:?Defina DB_PASS no .env}
+      DB_NAME: ${DB_NAME:?Defina DB_NAME no .env}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/tasks', timeout=5).close()"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER:?Defina DB_USER no .env}
+      POSTGRES_PASSWORD: ${DB_PASS:?Defina DB_PASS no .env}
+      POSTGRES_DB: ${DB_NAME:?Defina DB_NAME no .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  postgres_data:
