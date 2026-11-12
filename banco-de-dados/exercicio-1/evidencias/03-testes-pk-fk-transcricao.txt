@@ -1,0 +1,17 @@
+Registro textual dos testes de integridade — Exercício 1
+Fonte: saídas reais do terminal compartilhadas pelo participante na conversa.
+Este arquivo NÃO é captura de tela. Nenhum erro foi simulado.
+
+TESTE FK — aluno com curso inexistente (curso_id=999)
+ERROR: insert or update on table "alunos" violates foreign key constraint "alunos_curso_id_fkey"
+DETAIL: Key (curso_id)=(999) is not present in table "cursos".
+
+TESTE PK — dois cursos distintos com o mesmo id=999
+ERROR: duplicate key value violates unique constraint "cursos_pkey"
+DETAIL: Key (id)=(999) already exists.
+
+VERIFICAÇÃO POSTERIOR
+cursos_invalidos | alunos_invalidos
+0                 | 0
+
+A validação de contagem zero também está na captura 02.

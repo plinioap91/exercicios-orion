@@ -1,0 +1,52 @@
+name: orion-banco-prod
+
+services:
+  db_postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: orion_user
+      POSTGRES_DB: orion_db
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no .env}
+    ports:
+      - "127.0.0.1:${PROD_POSTGRES_PORT:-5434}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  db_mongo:
+    image: orion-banco-mongo:prod
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: orion_admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Defina MONGO_ROOT_PASSWORD no .env}
+    ports:
+      - "127.0.0.1:${PROD_MONGO_PORT:-27019}:27017"
+    # Persistência dos bancos; não há bind mounts de código no PROD.
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+    healthcheck:
+      test:
+        - CMD
+        - mongosh
+        - --quiet
+        - --eval
+        - 'const admin = db.getSiblingDB("admin"); admin.auth(process.env.MONGO_INITDB_ROOT_USERNAME, process.env.MONGO_INITDB_ROOT_PASSWORD); if (admin.runCommand({ping: 1}).ok !== 1) quit(1);'
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 20s
+
+volumes:
+  postgres_data:
+  mongo_data:
+  mongo_config:

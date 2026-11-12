@@ -1,0 +1,78 @@
+# =================================================================
+# ARQUIVO DE AMBIENTE DO ORION BOOTCAMP - BANCO DE DADOS
+# =================================================================
+# Comandos para usar:
+#
+#   Para iniciar os bancos (em background):
+#     docker compose up -d
+#
+#   Para parar os bancos:
+#     docker compose down
+#
+# =================================================================
+
+version: '3.8'
+
+services:
+  # --- SERVIÇO DO BANCO RELACIONAL (POSTGRES) ---
+  # Usado nos exercícios 1 e 2
+  db_postgres:
+    image: postgres:16-alpine
+    container_name: orion_postgres_db
+    environment:
+      POSTGRES_USER: orion_user
+      POSTGRES_PASSWORD: orion_password
+      POSTGRES_DB: orion_db
+    ports:
+      # Expõe a porta 5432 do container para a porta 5432 da sua máquina
+      # Formato: <porta_maquina>:<porta_container>
+      - "5432:5432"
+    volumes:
+      # Cria um "volume nomeado" para persistir os dados do postgres
+      # Mesmo se você rodar 'docker compose down', seus dados não serão perdidos.
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # Verifica se o banco está pronto para aceitar conexões
+      test: ["CMD", "pg_isready", "-U", "orion_user", "-d", "orion_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - orion_network
+
+  # --- SERVIÇO DO BANCO NÃO RELACIONAL (MONGODB) ---
+  # Usado nos exercícios 3 e 4
+  db_mongo:
+    image: mongo:latest
+    container_name: orion_mongo_db
+    environment:
+      # O Mongo usa 'ROOT_USERNAME' e 'ROOT_PASSWORD' para criar o admin
+      MONGO_INITDB_ROOT_USERNAME: orion_admin
+      MONGO_INITDB_ROOT_PASSWORD: orion_admin_pass
+    ports:
+      # Expõe a porta 27017 do container para a porta 27017 da sua máquina
+      - "27017:27017"
+    volumes:
+      # Cria um volume nomeado para persistir os dados do mongo
+      - mongo_data:/data/db
+    healthcheck:
+      # Verifica se o banco está pronto para aceitar conexões
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - orion_network
+
+# --- REDE E VOLUMES ---
+# Define os volumes nomeados que criamos nos serviços
+volumes:
+  postgres_data:
+    driver: local
+  mongo_data:
+    driver: local
+
+# Define a rede customizada para os containers se comunicarem
+networks:
+  orion_network:
+    driver: bridge

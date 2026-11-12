@@ -1,0 +1,10 @@
+# Contexto mínimo: somente os dois scripts usados pela imagem PROD.
+**
+!Dockerfile.dev
+!Dockerfile.prod
+!exercicio-3/
+exercicio-3/**
+!exercicio-3/exercicio-3.js
+!exercicio-4/
+exercicio-4/**
+!exercicio-4/exercicio-4.js

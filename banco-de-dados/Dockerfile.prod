@@ -1,0 +1,12 @@
+# Versão principal fixada; MongoDB oficial não utiliza Alpine.
+FROM mongo:8.0
+
+WORKDIR /exercicios
+
+# Apenas os scripts necessários entram na imagem, sem pacotes adicionais.
+# O banco continua usando o entrypoint oficial, que prepara os volumes e
+# reduz os privilégios antes de executar mongod.
+COPY exercicio-3/exercicio-3.js ./exercicio-3/exercicio-3.js
+COPY exercicio-4/exercicio-4.js ./exercicio-4/exercicio-4.js
+
+# Os scripts não são seeds automáticos: sua execução deve ser explícita.
