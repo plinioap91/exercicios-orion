@@ -1,0 +1,7 @@
+# MongoDB oficial inclui mongosh e mantém o entrypoint de inicialização.
+FROM mongo:8.0
+
+WORKDIR /exercicios
+
+# Os scripts são montados somente para leitura pelo Compose DEV.
+# O CMD e o ENTRYPOINT oficiais iniciam o banco; scripts são executados à parte.

@@ -1,0 +1,30 @@
+Registro textual — execução do exercicio-2.sql
+Fonte: saída real de terminal compartilhada pelo participante na conversa.
+Este arquivo NÃO é captura de tela. Nenhum resultado foi simulado.
+
+    aluno     |        curso
+--------------+---------------------
+ João Silva   | Desenvolvimento Web
+ Maria Santos | Desenvolvimento Web
+ Ana Souza    | Ciência de Dados
+ Pedro Lima   | Engenharia de IA
+(4 rows)
+
+    aluno     |        curso
+--------------+---------------------
+ João Silva   | Desenvolvimento Web
+ Maria Santos | Desenvolvimento Web
+(2 rows)
+
+UPDATE 1
+    aluno     |      curso
+--------------+------------------
+ Maria Santos | Ciência de Dados
+(1 row)
+
+ id | nome_curso
+----+------------
+(0 rows)
+
+Observação: LEFT JOIN sem linhas é esperado porque os três cursos têm alunos.
+A segunda execução do UPDATE pode mostrar Maria já matriculada em Ciência de Dados.
